@@ -91,7 +91,6 @@ training_env = flyte.TaskEnvironment(
         "CUDA_HOME": "/usr/local/cuda",
         "DS_SKIP_CUDA_CHECK": "1",
     },
-    cache="auto",
 )
 
 evaluation_env = flyte.TaskEnvironment(
