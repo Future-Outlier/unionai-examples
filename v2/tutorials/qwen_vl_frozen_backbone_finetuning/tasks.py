@@ -49,6 +49,7 @@ from utils import (
 )
 
 
+# {{docs-fragment training-task-signature}}
 @wandb_init
 @training_env.task(report=True)
 def train_qwen_adapter_multinode(
@@ -59,6 +60,7 @@ def train_qwen_adapter_multinode(
     resume_from: Optional[Dir] = None,
     recovery_uri: Optional[str] = None,
 ) -> Optional[Dir]:
+# {{/docs-fragment}}
     from lightning.pytorch.callbacks import ModelCheckpoint
     from lightning.pytorch.loggers import WandbLogger
     from lightning.pytorch.strategies import DeepSpeedStrategy
@@ -81,12 +83,14 @@ def train_qwen_adapter_multinode(
         image_size=config.image_size,
     )
 
+    # {{docs-fragment grad-accum}}
     world_size = NUM_NODES * DEVICES_PER_NODE
     per_step_batch = world_size * config.per_device_batch_size
     grad_accum_steps = max(
         1,
         math.ceil(config.target_global_batch_size / max(1, per_step_batch)),
     )
+    # {{/docs-fragment}}
 
     module = QwenVLAdapterModule(
         model_name=config.model_name,
@@ -149,6 +153,7 @@ def train_qwen_adapter_multinode(
         prior_metrics=prior_metrics,
     )
 
+    # {{docs-fragment deepspeed-strategy}}
     strategy = DeepSpeedStrategy(
         stage=2,
         offload_optimizer=False,
@@ -156,12 +161,14 @@ def train_qwen_adapter_multinode(
         process_group_backend="nccl",
         exclude_frozen_parameters=True,
     )
+    # {{/docs-fragment}}
 
     run = get_wandb_run()
     wandb_logger = WandbLogger(experiment=run, log_model=False) if run else False
     if run and getattr(run, "config", None) is not None:
         run.config.update(config.to_dict(), allow_val_change=True)
 
+    # {{docs-fragment trainer-setup}}
     trainer = L.Trainer(
         accelerator="gpu",
         devices=DEVICES_PER_NODE,
@@ -181,6 +188,7 @@ def train_qwen_adapter_multinode(
         benchmark=True,
         log_every_n_steps=1,
     )
+    # {{/docs-fragment}}
 
     final_status = "completed"
     error_message = None
@@ -261,6 +269,7 @@ def train_qwen_adapter_multinode(
     return None
 
 
+# {{docs-fragment evaluation-task-header}}
 @evaluation_env.task
 async def evaluate_qwen_adapter(
     val_manifest: JsonlFile,
@@ -268,6 +277,7 @@ async def evaluate_qwen_adapter(
     training_artifacts: Dir,
     config: Config,
 ) -> Dir:
+# {{/docs-fragment}}
     from torchvision.transforms.functional import pil_to_tensor
     from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 
@@ -414,6 +424,7 @@ async def evaluate_qwen_adapter(
     return await Dir.from_local(str(output_dir))
 
 
+# {{docs-fragment driver-task-signature}}
 @driver_env.task(report=True)
 async def qwen_vl_multinode_deepspeed(
     model_name: str = DEFAULT_MODEL_NAME,
@@ -430,6 +441,7 @@ async def qwen_vl_multinode_deepspeed(
     wandb_project: str = "qwen-vl-multinode-deepspeed",
     wandb_entity: Optional[str] = None,
 ) -> Optional[Dir]:
+# {{/docs-fragment}}
     config = Config(
         model_name=model_name,
         max_train_samples=max_train_samples,
@@ -451,6 +463,7 @@ async def qwen_vl_multinode_deepspeed(
         config=config
     )
 
+    # {{docs-fragment recovery-handler}}
     try:
         with wandb_config(
             project=wandb_project,
@@ -478,6 +491,7 @@ async def qwen_vl_multinode_deepspeed(
             return recovered_artifacts
         except Exception:
             raise e
+    # {{/docs-fragment}}
 
     if training_artifacts is None:
         return None

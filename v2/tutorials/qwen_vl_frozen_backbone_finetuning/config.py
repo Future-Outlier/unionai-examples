@@ -6,10 +6,12 @@ from flyte.io import Dir
 from flyteplugins.jsonl import JsonlFile
 from flyteplugins.pytorch.task import Elastic
 
+# {{docs-fragment topology}}
 NUM_NODES = 2
 DEVICES_PER_NODE = 4
 IMAGE_SIZE = 224
 DEFAULT_MODEL_NAME = "Qwen/Qwen2.5-VL-3B-Instruct"
+# {{/docs-fragment}}
 DEFAULT_CHECKPOINT_BASE_URI = (
     "s3://flyte-examples/qwen-vl-multinode-deepspeed"  # TODO: update with your own URI
 )
@@ -27,6 +29,7 @@ CLASS_NAMES = [
     "truck",
 ]
 
+# {{docs-fragment gpu-image}}
 gpu_image = (
     flyte.Image.from_base("nvidia/cuda:12.8.0-cudnn-devel-ubuntu22.04")
     .clone(name="qwen_vl_multinode_deepspeed", python_version=(3, 13), extendable=True)
@@ -44,7 +47,9 @@ gpu_image = (
         "flyteplugins-wandb>=2.0.11",
     )
 )
+# {{/docs-fragment}}
 
+# {{docs-fragment non-gpu-image}}
 non_gpu_image = flyte.Image.from_debian_base(
     name="qwen_vl_multinode_deepspeed_non_gpu"
 ).with_pip_packages(
@@ -56,7 +61,9 @@ non_gpu_image = flyte.Image.from_debian_base(
     "pillow==11.3.0",
     "torchvision==0.24.1",
 )
+# {{/docs-fragment}}
 
+# {{docs-fragment task-environments}}
 dataset_env = flyte.TaskEnvironment(
     name="qwen_vl_dataset_prep",
     image=non_gpu_image,
@@ -100,8 +107,10 @@ driver_env = flyte.TaskEnvironment(
     resources=flyte.Resources(cpu=2, memory="4Gi"),
     depends_on=[dataset_env, training_env, evaluation_env],
 )
+# {{/docs-fragment}}
 
 
+# {{docs-fragment config-dataclass}}
 @dataclass
 class Config:
     model_name: str = DEFAULT_MODEL_NAME
@@ -126,6 +135,7 @@ class Config:
 
     def to_dict(self) -> dict:
         return asdict(self)
+# {{/docs-fragment}}
 
 
 class DatasetArtifacts(NamedTuple):

@@ -18,6 +18,7 @@ from config import (
 from tasks import qwen_vl_multinode_deepspeed
 from flyte.io import Dir
 
+# {{docs-fragment main-run}}
 if __name__ == "__main__":
     flyte.init_from_config()
 
@@ -41,3 +42,4 @@ if __name__ == "__main__":
     )
 
     print(f"Run URL: {run.url}")
+# {{/docs-fragment}}

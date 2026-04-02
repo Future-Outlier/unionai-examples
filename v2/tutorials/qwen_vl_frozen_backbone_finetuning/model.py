@@ -83,6 +83,7 @@ def dense_images_to_packed_pixels(
     return torch.cat(packed, dim=0)
 
 
+# {{docs-fragment residual-adapter}}
 class ResidualOcclusionAdapter(nn.Module):
     def __init__(self, hidden_channels: int = 32):
         super().__init__()
@@ -112,8 +113,10 @@ class ResidualOcclusionAdapter(nn.Module):
         )
         residual = self.net(adapter_input)
         return pixel_values + torch.tanh(self.gate) * residual
+# {{/docs-fragment}}
 
 
+# {{docs-fragment adapter-module-init}}
 class QwenVLAdapterModule(L.LightningModule):
     def __init__(
         self,
@@ -147,6 +150,7 @@ class QwenVLAdapterModule(L.LightningModule):
         self.temporal_patch_size = int(
             getattr(self.backbone.config.vision_config, "temporal_patch_size", 1)
         )
+# {{/docs-fragment}}
 
     def train(self, mode: bool = True):
         super().train(mode)
@@ -163,6 +167,7 @@ class QwenVLAdapterModule(L.LightningModule):
             if key.startswith("backbone.") and key not in state_dict:
                 state_dict[key] = value
 
+    # {{docs-fragment forward-losses}}
     def _forward_losses(
         self, batch: dict[str, torch.Tensor]
     ) -> dict[str, torch.Tensor]:
@@ -242,6 +247,7 @@ class QwenVLAdapterModule(L.LightningModule):
             "lm_loss": outputs.loss,
             "reconstruction_loss": reconstruction_loss,
         }
+    # {{/docs-fragment}}
 
     def training_step(self, batch, _batch_idx):
         losses = self._forward_losses(batch)

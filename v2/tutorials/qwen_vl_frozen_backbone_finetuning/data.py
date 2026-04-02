@@ -6,6 +6,7 @@ from config import CLASS_NAMES, Config, DatasetArtifacts, dataset_env
 from utils import build_occlusion_box
 
 
+# {{docs-fragment prepare-dataset-task}}
 @dataset_env.task
 async def prepare_occlusion_dataset(config: Config) -> DatasetArtifacts:
     from PIL import Image
@@ -90,6 +91,7 @@ async def prepare_occlusion_dataset(config: Config) -> DatasetArtifacts:
         val_manifest=val_manifest,
         images=await Dir.from_local(str(images_dir)),
     )
+# {{/docs-fragment}}
 
 
 class QwenOcclusionDataset(torch.utils.data.Dataset):
