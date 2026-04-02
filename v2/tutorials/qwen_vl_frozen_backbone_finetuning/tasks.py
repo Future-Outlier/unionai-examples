@@ -60,7 +60,7 @@ def train_qwen_adapter_multinode(
     resume_from: Optional[Dir] = None,
     recovery_uri: Optional[str] = None,
 ) -> Optional[Dir]:
-# {{/docs-fragment}}
+    # {{/docs-fragment training-task-signature}}
     from lightning.pytorch.callbacks import ModelCheckpoint
     from lightning.pytorch.loggers import WandbLogger
     from lightning.pytorch.strategies import DeepSpeedStrategy
@@ -90,7 +90,7 @@ def train_qwen_adapter_multinode(
         1,
         math.ceil(config.target_global_batch_size / max(1, per_step_batch)),
     )
-    # {{/docs-fragment}}
+    # {{/docs-fragment grad-accum}}
 
     module = QwenVLAdapterModule(
         model_name=config.model_name,
@@ -161,7 +161,7 @@ def train_qwen_adapter_multinode(
         process_group_backend="nccl",
         exclude_frozen_parameters=True,
     )
-    # {{/docs-fragment}}
+    # {{/docs-fragment deepspeed-strategy}}
 
     run = get_wandb_run()
     wandb_logger = WandbLogger(experiment=run, log_model=False) if run else False
@@ -188,7 +188,7 @@ def train_qwen_adapter_multinode(
         benchmark=True,
         log_every_n_steps=1,
     )
-    # {{/docs-fragment}}
+    # {{/docs-fragment trainer-setup}}
 
     final_status = "completed"
     error_message = None
@@ -277,7 +277,7 @@ async def evaluate_qwen_adapter(
     training_artifacts: Dir,
     config: Config,
 ) -> Dir:
-# {{/docs-fragment}}
+    # {{/docs-fragment evaluation-task-header}}
     from torchvision.transforms.functional import pil_to_tensor
     from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 
@@ -441,7 +441,7 @@ async def qwen_vl_multinode_deepspeed(
     wandb_project: str = "qwen-vl-multinode-deepspeed",
     wandb_entity: Optional[str] = None,
 ) -> Optional[Dir]:
-# {{/docs-fragment}}
+    # {{/docs-fragment driver-task-signature}}
     config = Config(
         model_name=model_name,
         max_train_samples=max_train_samples,
@@ -491,7 +491,7 @@ async def qwen_vl_multinode_deepspeed(
             return recovered_artifacts
         except Exception:
             raise e
-    # {{/docs-fragment}}
+    # {{/docs-fragment recovery-handler}}
 
     if training_artifacts is None:
         return None

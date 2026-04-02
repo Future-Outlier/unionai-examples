@@ -91,7 +91,7 @@ async def prepare_occlusion_dataset(config: Config) -> DatasetArtifacts:
         val_manifest=val_manifest,
         images=await Dir.from_local(str(images_dir)),
     )
-# {{/docs-fragment}}
+# {{/docs-fragment prepare-dataset-task}}
 
 
 class QwenOcclusionDataset(torch.utils.data.Dataset):

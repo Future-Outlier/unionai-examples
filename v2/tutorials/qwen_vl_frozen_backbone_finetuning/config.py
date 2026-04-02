@@ -11,7 +11,7 @@ NUM_NODES = 2
 DEVICES_PER_NODE = 4
 IMAGE_SIZE = 224
 DEFAULT_MODEL_NAME = "Qwen/Qwen2.5-VL-3B-Instruct"
-# {{/docs-fragment}}
+# {{/docs-fragment topology}}
 DEFAULT_CHECKPOINT_BASE_URI = (
     "s3://flyte-examples/qwen-vl-multinode-deepspeed"  # TODO: update with your own URI
 )
@@ -47,7 +47,7 @@ gpu_image = (
         "flyteplugins-wandb>=2.0.11",
     )
 )
-# {{/docs-fragment}}
+# {{/docs-fragment gpu-image}}
 
 # {{docs-fragment non-gpu-image}}
 non_gpu_image = flyte.Image.from_debian_base(
@@ -61,7 +61,7 @@ non_gpu_image = flyte.Image.from_debian_base(
     "pillow==11.3.0",
     "torchvision==0.24.1",
 )
-# {{/docs-fragment}}
+# {{/docs-fragment non-gpu-image}}
 
 # {{docs-fragment task-environments}}
 dataset_env = flyte.TaskEnvironment(
@@ -107,7 +107,7 @@ driver_env = flyte.TaskEnvironment(
     resources=flyte.Resources(cpu=2, memory="4Gi"),
     depends_on=[dataset_env, training_env, evaluation_env],
 )
-# {{/docs-fragment}}
+# {{/docs-fragment task-environments}}
 
 
 # {{docs-fragment config-dataclass}}
@@ -135,7 +135,7 @@ class Config:
 
     def to_dict(self) -> dict:
         return asdict(self)
-# {{/docs-fragment}}
+# {{/docs-fragment config-dataclass}}
 
 
 class DatasetArtifacts(NamedTuple):

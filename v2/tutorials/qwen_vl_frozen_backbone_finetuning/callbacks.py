@@ -311,7 +311,7 @@ class LiveTrainingReportCallback(L.Callback):
             """,
             do_flush=True,
         )
-    # {{/docs-fragment}}
+    # {{/docs-fragment live-report-push}}
 
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx) -> None:
         if trainer.global_rank != 0:
