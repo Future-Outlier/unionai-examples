@@ -22,11 +22,7 @@ import flyte
 
 img = (
     flyte.Image.from_debian_base(python_version=(3, 12))
-    .with_pip_packages(
-        "flyteplugins-polars==2.0.9",
-        "pandera[polars]",
-    )
-    .with_local_v2_plugins("flyteplugins-pandera")
+    .with_pip_packages("flyteplugins-pandera", "flyteplugins-polars", "pandera[polars]")
 )
 
 env = flyte.TaskEnvironment(

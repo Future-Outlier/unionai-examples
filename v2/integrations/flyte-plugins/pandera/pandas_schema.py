@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#    "flyte>=2.0.0b52",
+#    "flyte",
 #    "flyteplugins-pandera",
 #    "pandera[pandas]",
 # ]
@@ -19,8 +19,8 @@ from flyteplugins.pandera import ValidationConfig
 
 import flyte
 
-img = flyte.Image.from_debian_base(python_version=(3, 12)).with_local_v2_plugins(
-    "flyteplugins-pandera"
+img = flyte.Image.from_debian_base(python_version=(3, 12)).with_pip_packages(
+    "flyteplugins-pandera", "pandera[pandas]"
 )
 
 env = flyte.TaskEnvironment(
